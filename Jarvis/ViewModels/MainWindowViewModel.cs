@@ -1,4 +1,5 @@
-﻿using System.Windows.Input;
+﻿using System.Threading;
+using System.Windows.Input;
 
 namespace Jarvis
 {
@@ -6,17 +7,17 @@ namespace Jarvis
     {
         #region Variables
 
-        private string _input;
+        private string _input = "";
 
         public string input
         {
             get
             {
-                return _input;
+                return jarvis.speechRecognition.input;
             }
             set
             {
-                _input = value;
+                jarvis.speechRecognition.input = value;
                 OnPropertyChanged("input");
             }
         }
@@ -36,6 +37,8 @@ namespace Jarvis
             }
         }
 
+        private JarvisClass jarvis;
+
         #endregion
 
         #region Commands
@@ -48,11 +51,28 @@ namespace Jarvis
 
         public MainWindowViewModel()
         {
-            JarvisClass jarvis = new JarvisClass();
-            listenCommand = new RelayCommand(() => 
-                jarvis.speechRecognition.listenForCommands = jarvis.speechRecognition.listenForCommands ? true : false);
+            jarvis = new JarvisClass();
+            listenCommand = new RelayCommand(() =>
+                jarvis.speechRecognition.listenForCommands = jarvis.speechRecognition.listenForCommands ? false : true);
+            createUpdateInputThread();
         }
 
         #endregion
+
+        private void createUpdateInputThread()
+        {
+            new Thread(() =>
+            {
+                while (true)
+                {
+                    if (!input.Equals(_input))
+                    {
+                        _input = input;
+                        OnPropertyChanged("input");
+                    }
+                }
+            }).Start();
+        }
+
     }
 }

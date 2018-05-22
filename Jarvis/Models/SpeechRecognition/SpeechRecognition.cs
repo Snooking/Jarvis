@@ -1,4 +1,5 @@
 ﻿using System.Speech.Recognition;
+using System.Threading;
 
 namespace Jarvis
 {
@@ -17,12 +18,12 @@ namespace Jarvis
             }
         }
 
+        public string input { get; set; } = "";
+
         private SpeechRecognitionEngine speechRecognitionEngine;
         private Choices choices;
         private GrammarBuilder grammarBuilder;
         private Grammar grammar;
-
-        private SpeechRecognizer recognizer;
 
         public SpeechRecognition()
         {
@@ -30,20 +31,12 @@ namespace Jarvis
             choices = new Choices();
             addBasicChoices();
             prepareGrammar();
-            speechRecognitionEngine.RequestRecognizerUpdate();
-            speechRecognitionEngine.LoadGrammar(grammar);
-            speechRecognitionEngine.SetInputToDefaultAudioDevice();
-            speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
-            while (true)
-            {
-                speechRecognitionEngine.SpeechRecognized += sr_SpeechRcognized;
-            }
-            //prepareRecognizer();
+            prepareRecognitionEngine();
+            createThreadForListening();
         }
 
         private void addBasicChoices()
         {
-            choices.Add("Jarvis?");
             choices.Add("Jarvis");
             choices.Add("Hello");
         }
@@ -53,27 +46,36 @@ namespace Jarvis
             grammarBuilder = new GrammarBuilder();
             grammarBuilder.Culture = System.Globalization.CultureInfo.CreateSpecificCulture("en-US");
             grammarBuilder.Append(choices);
-            grammarBuilder.AppendDictation();
+            //grammarBuilder.AppendDictation();
             grammar = new Grammar(grammarBuilder);
         }
 
-        private void prepareRecognizer()
+        private void prepareRecognitionEngine()
         {
-            recognizer = new SpeechRecognizer();
-            recognizer.LoadGrammar(grammar);
-            recognizer.Enabled = true;
-            while (true)
+            speechRecognitionEngine.RequestRecognizerUpdate();
+            speechRecognitionEngine.LoadGrammar(grammar);
+            speechRecognitionEngine.SetInputToDefaultAudioDevice();
+            speechRecognitionEngine.RecognizeAsync(RecognizeMode.Multiple);
+        }
+
+        private void createThreadForListening()
+        {
+            new Thread(() =>
             {
-                recognizer.SpeechRecognized += new System.EventHandler<SpeechRecognizedEventArgs>(sr_SpeechRcognized);
-            }
+                speechRecognitionEngine.SpeechRecognized += sr_SpeechRcognized;
+            }).Start();
         }
 
         public void sr_SpeechRcognized(object sender, SpeechRecognizedEventArgs e)
         {
-            System.Console.WriteLine(e.Result.Text);
+            input += e.Result.Text;
             if (e.Result.Text == "Jarvis")
             {
-                System.Console.WriteLine("Hello sir");
+                listenForCommands = true;
+            }
+            if (e.Result.Text == "Thank you")
+            {
+                listenForCommands = false;
             }
         }
     }

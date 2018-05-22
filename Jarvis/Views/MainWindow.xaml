@@ -6,9 +6,28 @@
         xmlns:local="clr-namespace:Jarvis"
         mc:Ignorable="d"
         Title="MainWindow" Height="450" Width="800">
-    <StackPanel>
-        <Button Content="Listen for commands" Command="{Binding listenCommand}"/>
-        <TextBlock Text="{Binding input}"/>
-        <TextBlock Text="{Binding output}"/>
-    </StackPanel>
+    <Grid>
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+
+        <Grid>
+
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <TextBlock Text="{Binding input}"/>
+            <TextBlock  Grid.Column="1"
+                        Text="{Binding output}"/>
+
+        </Grid>
+
+        <Button Grid.Row="1" 
+                Content="Listen for commands" 
+                Command="{Binding listenCommand}"/>
+    </Grid>
 </Window>

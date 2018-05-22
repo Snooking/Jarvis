@@ -8,7 +8,7 @@
         public JarvisClass()
         {
             talker = new Talker();
-            //speechRecognition = new SpeechRecognition();
+            speechRecognition = new SpeechRecognition();
         }
     }
 }
