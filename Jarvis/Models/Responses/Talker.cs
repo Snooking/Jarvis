@@ -7,6 +7,8 @@ namespace Jarvis
         private SpeechSynthesizer synthesizer;
         private PromptBuilder builder;
 
+        public string output { get; set; } = "";
+
         public Talker()
         {
             synthesizer = new SpeechSynthesizer();
@@ -20,6 +22,7 @@ namespace Jarvis
             builder.ClearContent();
             builder.AppendText(sentence);
             synthesizer.Speak(builder);
+            output += sentence;
         }
     }
 }

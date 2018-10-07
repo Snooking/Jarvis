@@ -39,6 +39,8 @@ namespace Jarvis
         {
             choices.Add("Jarvis");
             choices.Add("Hello");
+            choices.Add("Thank you");
+            choices.Add("Stepmania");
         }
 
         private void prepareGrammar()
@@ -62,13 +64,14 @@ namespace Jarvis
         {
             new Thread(() =>
             {
-                speechRecognitionEngine.SpeechRecognized += sr_SpeechRcognized;
+                speechRecognitionEngine.SpeechRecognized += recognizeSpeech;
             }).Start();
         }
 
-        public void sr_SpeechRcognized(object sender, SpeechRecognizedEventArgs e)
+        public void recognizeSpeech(object sender, SpeechRecognizedEventArgs e)
         {
             input += e.Result.Text;
+            input += "\n";
             if (e.Result.Text == "Jarvis")
             {
                 listenForCommands = true;

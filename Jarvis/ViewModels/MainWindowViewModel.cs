@@ -22,17 +22,17 @@ namespace Jarvis
             }
         }
 
-        private string _output;
+        private string _output = "";
 
         public string output
         {
             get
             {
-                return _output;
+                return jarvis.talker.output;
             }
             set
             {
-                _output = value;
+                jarvis.talker.output = value;
                 OnPropertyChanged("output");
             }
         }
@@ -53,13 +53,14 @@ namespace Jarvis
         {
             jarvis = new JarvisClass();
             listenCommand = new RelayCommand(() =>
-                jarvis.speechRecognition.listenForCommands = jarvis.speechRecognition.listenForCommands ? false : true);
-            createUpdateInputThread();
+                jarvis.speechRecognition.listenForCommands = 
+                jarvis.speechRecognition.listenForCommands ? false : true);
+            createUpdateInputOutputThread();
         }
 
         #endregion
 
-        private void createUpdateInputThread()
+        private void createUpdateInputOutputThread()
         {
             new Thread(() =>
             {
@@ -69,6 +70,11 @@ namespace Jarvis
                     {
                         _input = input;
                         OnPropertyChanged("input");
+                    }
+                    if(!output.Equals(_output))
+                    {
+                        _output = output;
+                        OnPropertyChanged("output");
                     }
                 }
             }).Start();
